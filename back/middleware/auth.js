@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 //logique
 module.exports = (req, res, next) => {
    try {
-       const token = req.headers.authorization.split(' ')[1];//récupère le token en splitant le header (vérifié que le token est en deuxième position)
+       const token = req.headers.authorization.split(' ')[1];//récupère le token en splitant le header 
        const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');//décode et vérifie si le token est valide
        const userId = decodedToken.userId;//récupère userId du token décodé
        req.auth = {

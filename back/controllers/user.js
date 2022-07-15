@@ -7,13 +7,22 @@ const jwt = require("jsonwebtoken");
 //Permet de récuperer le schéma dans les models
 const User = require("../models/User");
 
-//logique pour le password
+//récupération du plugin password-validator qui permettra de renforcer le choix du mot de passe
 const passwordValidator = require("password-validator");
 
-// Creation du schema pour valider le password
-const passwordSchema = new passwordValidator();
+// récupération du plugin rate-limit qui permet de limiter le nombre d'essai de connexion
+const rateLimit = require('express-rate-limit');
 
-// Add properties to it
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  message: "Vous avez atteint le maximum d'essais de connexion. Votre compte est bloqué 15mn."
+})
+
+
+
+// Creation du schema pour renforcer le password
+const passwordSchema = new passwordValidator();
 passwordSchema
   .is()
   .min(8) // Minimum length 8
@@ -33,7 +42,7 @@ passwordSchema
   .oneOf(["Passw0rd", "Password123"]); // Blacklist these values
 
 
-//permet de crypter le mot de passe lors d'une inscription
+//permet de créer un user + utiliser le shéma de password et de crypter le mot de passe lors d'une inscription
 exports.signup = (req, res, next) => {
   if (!passwordSchema.validate(req.body.password)) {
     // si le mot de passe n'est pas valide
@@ -61,7 +70,7 @@ exports.signup = (req, res, next) => {
       .catch((error) => res.status(500).json({ error })); //500 erreur serveur
   }
 };
-//permet à l'utilisateur de se connecter
+//permet à l'utilisateur de se connecter et  de vérifier le nombre de test de connexion
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
