@@ -1,7 +1,7 @@
 //Récupère le package multer qui permet de gerer des fichiers entrants
 const multer = require('multer');
 
-//
+//indique quel nom d'extension utiliser pour l'enregistrement des images
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
@@ -14,8 +14,8 @@ const storage = multer.diskStorage({
     callback(null, 'images');
   },
   filename: (req, file, callback) => {//explique quel nom de fichier utiliser
-    const name = file.originalname.split(' ').join('_');//récupère le nom d'origine en remplacent les espaces par des _
-    const extension = MIME_TYPES[file.mimetype];//indique quel mime-type utiliser pour l'extesion de fichier
+    const name = file.originalname.split(' ').join('_');//récupère le nom d'origine en remplaçant les espaces par des _
+    const extension = MIME_TYPES[file.mimetype];//indique quel mime-type utiliser pour l'extension de fichier
     callback(null, name + Date.now() + '.' + extension);//crée le nom complet en ajoutant une timestamp
   }
 });

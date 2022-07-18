@@ -1,9 +1,12 @@
 //Permet de récupérer le schéma crée dans les models
 const Sauce = require('../models/Sauce');
+
+//Permet l'utilisation du pluggin fs (gestion de fichier)
 const fs = require('fs');
 
 //logique métier de chaque action
 
+//création de sauce
 exports.createSauce = (req, res, next) =>{
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;//l'id de la sauce sera généré par la base de données
@@ -22,7 +25,7 @@ exports.createSauce = (req, res, next) =>{
 };
 
 
-
+//modification de sauce
 exports.modifySauce = (req, res, next) => {
     //vérifie s'il y un champs file
     const sauceObject = req.file ? {
@@ -47,6 +50,7 @@ exports.modifySauce = (req, res, next) => {
     
 };
 
+//Supprime une sauce
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
     .then( sauce => {
@@ -65,18 +69,19 @@ exports.deleteSauce = (req, res, next) => {
     
 }
 
+//accès à une sauce
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
       .then(sauce => res.status(200).json(sauce))
       .catch(error => res.status(404).json({ error }));
 }
-
+//accès à l'ensemble des sauces
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
     .then((sauces) => res.status(200).json(sauces))
     .catch(error => res.status(400).json({ error }));
 }
-
+//Pouvoir liker une sauce
 exports.likeSauce = (req, res, next) =>{
     //console.log("like", req.body);
  Sauce.findOne({ _id: req.params.id})

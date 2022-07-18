@@ -1,50 +1,19 @@
-//installation du package bcrypt
+//Utilisation du package bcrypt
 const bcrypt = require("bcrypt");
 
-//installation du package jsonwebtoken
+//Utilisation du package jsonwebtoken
 const jwt = require("jsonwebtoken");
 
-//Permet de récuperer le schéma dans les models
+//Permet de récuperer le schéma user dans les models
 const User = require("../models/User");
 
-//récupération du plugin password-validator qui permettra de renforcer le choix du mot de passe
-const passwordValidator = require("password-validator");
-
-// récupération du plugin rate-limit qui permet de limiter le nombre d'essai de connexion
-const rateLimit = require('express-rate-limit');
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 3,
-  message: "Vous avez atteint le maximum d'essais de connexion. Votre compte est bloqué 15mn."
-})
-
-
-
-// Creation du schema pour renforcer le password
-const passwordSchema = new passwordValidator();
-passwordSchema
-  .is()
-  .min(8) // Minimum length 8
-  .is()
-  .max(100) // Maximum length 100
-  .has()
-  .uppercase(1) // Must have uppercase letters
-  .has()
-  .lowercase() // Must have lowercase letters
-  .has()
-  .digits(1) // Must have at least 2 digits
-  .has()
-  .not()
-  .spaces() // Should not have spaces
-  .is()
-  .not()
-  .oneOf(["Passw0rd", "Password123"]); // Blacklist these values
+//Permet de récuperer le schéma password dans les models
+const Password = require("../models/Password");
 
 
 //permet de créer un user + utiliser le shéma de password et de crypter le mot de passe lors d'une inscription
 exports.signup = (req, res, next) => {
-  if (!passwordSchema.validate(req.body.password)) {
+  if (!Password.validate(req.body.password)) {
     // si le mot de passe n'est pas valide
     return res
       .status(400)
@@ -52,7 +21,7 @@ exports.signup = (req, res, next) => {
         message:
           'Le mot de passe doit contenir au min 8 caractères, 1 majuscule et 1 chiffre',
       });
-  } else if (passwordSchema.validate(req.body.password)) {
+  } else if (Password.validate(req.body.password)) {
     // si le mot de passe est ok
     bcrypt
       .hash(req.body.password, 10) //on appel bcrypt auquel on passe le mot de passe et on sel 10fois avec l'algo de hachage
@@ -65,12 +34,12 @@ exports.signup = (req, res, next) => {
         user
           .save() //enregistre dans la base de données le nouvel utilisateur
           .then(() => res.status(201).json({ message: "Utilisateur créé !" })) //201 création de ressource
-          .catch((error) => res.status(400).json({ error }));
+          .catch((error) => res.status(400).json({ error }));//mauvaise requête 
       })
       .catch((error) => res.status(500).json({ error })); //500 erreur serveur
   }
 };
-//permet à l'utilisateur de se connecter et  de vérifier le nombre de test de connexion
+//permet à l'utilisateur de se connecter
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
