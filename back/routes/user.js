@@ -1,4 +1,4 @@
-//Permet d'utiliser express
+//Permet d'utiliser express + son middleware "router"
 const express = require('express');
 const router = express.Router();
 

@@ -10,6 +10,8 @@ const User = require("../models/User");
 //Permet de récuperer le schéma password dans les models
 const Password = require("../models/Password");
 
+require('dotenv').config();
+
 
 //permet de créer un user + utiliser le shéma de password et de crypter le mot de passe lors d'une inscription
 exports.signup = (req, res, next) => {
@@ -26,8 +28,8 @@ exports.signup = (req, res, next) => {
     bcrypt
       .hash(req.body.password, 10) //on appel bcrypt auquel on passe le mot de passe et on sel 10fois avec l'algo de hachage
       .then((hash) => {
+        //crée un nouvel user avec le model existant
         const user = new User({
-          //crée un nouvel user avec le model existant
           email: req.body.email,
           password: hash, //enregistre le mot de passe haché
         });
@@ -43,13 +45,13 @@ exports.signup = (req, res, next) => {
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
+      //vérifie si l'utilisateur existe
       if (user === null) {
-        //vérifie si l'utilisateur existe
         res
           .status(401)
           .json({ message: "identifiant/mot de passe incorrecte" });
       } else {
-        //verifie si le mot de passe correspond avec le hash de la BDD
+        //verifie si le mot de passe correspond avec le hash de la BDD grace à la méthode compare de bcrypt
         bcrypt
           .compare(req.body.password, user.password)
           .then((valid) => {
@@ -59,12 +61,12 @@ exports.login = (req, res, next) => {
                 .json({ message: "identifiant/mot de passe incorrecte" });
             } else {
               res.status(200).json({
+                //permet d'encoder un nouveau token avec méthode sign
                 userId: user._id,
                 token: jwt.sign(
-                  //permet d'encoder les informations
                   { userId: user._id },
-                  "RANDOM_TOKEN_SECRET", //clé secrète
-                  { expiresIn: "24h" } //au dela de 24h le token ne sera plus valide
+                  process.env.SECRETKEY, //clé secrète
+                  { expiresIn: "24h" } //au dela de 24h le token ne sera plus valide, l'user devra se reconnecter
                 ),
               });
             }

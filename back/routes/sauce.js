@@ -23,4 +23,5 @@ router.get('/', auth, sauceControllers.getAllSauces);
 //permet de liker ou disliker une sauce
 router.post('/:id/like', auth, sauceControllers.likeSauce);
 
+//exporte les router
 module.exports = router;

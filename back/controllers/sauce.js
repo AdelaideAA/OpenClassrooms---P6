@@ -4,26 +4,22 @@ const Sauce = require('../models/Sauce');
 //Permet l'utilisation du pluggin fs (gestion de fichier)
 const fs = require('fs');
 
-//logique métier de chaque action
+//************logique métier de chaque action
 
 //création de sauce
 exports.createSauce = (req, res, next) =>{
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;//l'id de la sauce sera généré par la base de données
-    //delete sauceObject._userId//puisque je rècupère plus Bas le token de l'utilisateur
 
     const sauce = new Sauce({
-       ...sauceObject,
+       ...sauceObject,//opérateur spread est utilisé pour faire une copie de tous les éléments de res.body
        userId: req.auth.userId,
        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`//permet de créer l'url complète
-    
      });
     sauce.save()
     .then(() => res.status(201).json({ message: 'Sauce enregistrée !'}))
-    .catch(error => res.status(400).json({ error }));
-  
+    .catch(error => res.status(400).json({ error }));  
 };
-
 
 //modification de sauce
 exports.modifySauce = (req, res, next) => {
@@ -65,8 +61,7 @@ exports.deleteSauce = (req, res, next) => {
             })
         }
     })
-    .catch(error => res.status(500).json({ error }))
-    
+    .catch(error => res.status(500).json({ error }))    
 }
 
 //accès à une sauce
@@ -88,7 +83,7 @@ exports.likeSauce = (req, res, next) =>{
  
  .then((sauce) => {
     //ajoute un like
-    if(!sauce.usersLiked.includes(req.body.userId) && req.body.like === 1){//controole si l'utilisatuer à déjà liké
+    if(!sauce.usersLiked.includes(req.body.userId) && req.body.like === 1){//controle si l'utilisateur à déjà liké
         
         Sauce.updateOne({ _id: req.params.id},
             {
@@ -134,5 +129,5 @@ exports.likeSauce = (req, res, next) =>{
   
  })
  
- .catch(error => res.status(400).json({ error }));//voir quel code erreur à mettre
+ .catch(error => res.status(400).json({ error }));
 }
