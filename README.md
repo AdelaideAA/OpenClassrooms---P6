@@ -25,9 +25,18 @@ Faire particulièrement attention aux exigences en matière de sécurité. Nous 
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.4.
 
+## Back end Prerequisites ###
+
+You will need to have Node and `npm` installed locally on your machine.
+
+## Back end Installation ###
+
+Clone this repo. From the "back" folder of the project, run `npm install` and `mkdir images`. You 
+can then run the server with `node server` or `nodemon server`.
+
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` (or npm run start) for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
